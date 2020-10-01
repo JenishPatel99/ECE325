@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 /**
  * Assignment 1: Using standard libraries <br />
  * Calculate age in days
@@ -58,7 +57,7 @@ public class DaysOld {
 				birth.add(Calendar.DAY_OF_YEAR, 1);
 				counter += 1;
 			}
-			System.out.println(counter);
+			System.out.println("You are " + counter + " days old.");
 		}
 	}
 
