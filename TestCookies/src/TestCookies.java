@@ -7,58 +7,77 @@ import java.util.regex.Pattern;
  * Test cookies using regular expressions
  * <p>
  * 
- * @author <replace with your name>
+ * @author <Jenish Patel>
  */
 public class TestCookies {
 
 	/**
 	 * Verify a cookie and return the verification result
 	 * 
+	 * "//p" was used to invoke unicode category (control).
+	 * referenced from: https://www.regular-expressions.info/unicode.html
+	 * 
 	 * @param cookie The cookie string
 	 * @return True for a legal cookie; false for an illegal one
 	 */
 	public static boolean verifyCookie(String cookie) {
 		boolean legal = false;
-
+		
+		// Standard string pattern
 		String digit = "[\\d]";
-		String letter = "[a-zA-Z]";
-		String letDig = "[a-zA-Z|0-9]";
-		String ldh = "[a-zA-Z|0-9|\\-]";
-		String ldhStr = "[a-zA-Z|0-9|\\-]+";
-		String label = "[a-zA-Z]([a-zA-Z|0-9|\\-]+[a-zA-Z|0-9]*)?";
+		
+		// domain-av
+		String label = "[a-zA-Z]([a-zA-Z|0-9|\\-]*[a-zA-Z|0-9])?";
 		String subdomain = String.format("(%s(\\.%s)*)", label, label);
 		String domain = String.format("(\\.?%s)", subdomain);
-
+		String domainAv = String.format("(Domain=%s?)", domain);
+		
+		// httponlyAv
 		String httponlyAv = "HttpOnly";
+		
+		// secure-av
 		String secureAv = "Secure";
+		
+		// path-av
+		// Use //p to exclude control characters
 		String pathValue = "[^;\\p{Cntrl}]";
 		String pathAv = String.format("(Path=%s)", pathValue);
-		String domainAv = String.format("(Domain=%s?)", domain);
+		
+		// max-age-av
 		String maxAgeAv = "Max-Age=.[1-9].[0-9]";
+		
+		// expires-av
 		String month = "(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)";
 		String wkday = "(Mon|Tue|Wed|Thu|Fri|Sat|Sun)";
 		String date1 = String.format("%s{2} %s %s{4}", digit, month, digit);
 		String time = String.format("%s{2}:%s{2}:%s{2}", digit, digit, digit);
 		String rfc123Date = String.format("%s, %s %s GMT", wkday, date1, time);
 		String expiresAv = String.format("(Expires=%s)", rfc123Date);
-		String cookieAv = String.format("(%s|%s|%s|%s|%s|%s|)", expiresAv, maxAgeAv, domainAv, pathAv, secureAv,
-				httponlyAv);
+		
+		// Cookie header and combining properties
 		String cookieOctet = "[\\x21\\x23-\\x2b\\x2d-\\x3a\\x3c-\\x5b\\x5d-\\x7e]";
 		String cookieValue = String.format("\"%s*?\"|%s*", cookieOctet, cookieOctet);
 		String seperators = "\\(\\)<>\\@,\\.,;:\\\\\"\\/\\[\\]\\?=\\{\\} \t";
 		String token = String.format("[^%s]+", seperators);
+		String cookieAv = String.format("(%s|%s|%s|%s|%s|%s|)", expiresAv, maxAgeAv, domainAv, pathAv, secureAv,
+				httponlyAv);
 		String cookieName = String.format("%s", token);
 		String cookiePair = String.format("%s=(%s)", cookieName, cookieValue);
 		String setCookieString = String.format("%s(; %s)*", cookiePair, cookieAv);
 		String setCookieHeader = String.format("Set-Cookie: %s", setCookieString);
-
+		
+		// Standard regular expression evaluation in java
 		Pattern p = Pattern.compile(setCookieHeader);
 		Matcher m = p.matcher(cookie);
-
+		
+		while (m.find()) {
+			System.out.println(cookie.substring(m.start(), m.end()));
+		}
+		
+		// Changes validity of cookie
 		legal = m.matches();
-		// TODO: Assignment 2 -- compose your regular expression, and use it to verify
-		// the cookie
-
+		
+		// returns whether cookie is legal or illegal
 		return legal;
 	}
 
@@ -93,5 +112,6 @@ public class TestCookies {
 		for (int i = 0; i < cookies.length; i++)
 			System.out.println(String.format("Cookie %2d: %s", i + 1, verifyCookie(cookies[i]) ? "Legal" : "Illegal"));
 	}
+			
 
 }
