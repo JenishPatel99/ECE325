@@ -69,6 +69,7 @@ public class ResearchGroups {
         ResearchGroups.searchMember(groups, "Kian");
         ResearchGroups.searchMember(groups, "Susan");
         ResearchGroups.searchMember(groups, "John Doe");
+        System.out.println("\nSorted groups in order of smallest to biggest size of groups: ");
         ResearchGroups.sortGroups(groups);
     }
 
